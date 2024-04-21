@@ -16,6 +16,16 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '.' . $image->extension();
+            $image->move(public_path('images'), $imageName);
+
+            $request['image_path'] = $imageName;
+        } else {
+            return redirect()->back()->with('error', 'No image uploaded.');
+        }
+
         return StudentFacade::store($request->all());
     }
 

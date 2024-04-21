@@ -15,6 +15,7 @@ class StudentService
 
     public function store($data)
     {
+        $data['image'] = $data['image_path'];
         $this->student->create($data);
     }
 

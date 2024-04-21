@@ -29,14 +29,15 @@
                                 />
                                 <input
                                     type="file"
-                                    id="img"
+                                    id="image"
                                     class="d-none"
                                     name="image"
                                     accept="image/jpg, image/jpeg, image/png"
+                                    @change="handleFileUpload"
                                 />
                                 <label
                                     class="btn btn-primary mt-4 col-12"
-                                    for="img"
+                                    for="image"
                                 >
                                     Select an image
                                 </label>
@@ -69,7 +70,9 @@
 
             <div class="col-12 mt-3">
                 <div>
-                    <table class="table table-striped text-center">
+                    <table
+                        class="table text-center justify-content-center table-hover"
+                    >
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
@@ -87,7 +90,13 @@
                                 <td scope="row">{{ ++key }}</td>
                                 <td>{{ student.id }}</td>
                                 <td>{{ student.name }}</td>
-                                <td><img src="" /></td>
+                                <td>
+                                    <img
+                                        :src="'images/' + student.image"
+                                        width="100px"
+                                        height="100px"
+                                    />
+                                </td>
                                 <td>{{ student.age }}</td>
                                 <td>
                                     <button
@@ -216,14 +225,13 @@
 import axios from "axios";
 
 export default {
-    components: {
-        // AppLayout,
-    },
+    components: {},
     data() {
         return {
             student_form: {
                 name: "",
                 age: "",
+                image: null,
                 status: "active",
             },
             student_update_form: {
@@ -237,14 +245,16 @@ export default {
         this.getStudents();
     },
     methods: {
-        // editStudent(id) {},
-
         async getStudents() {
             const students = (await axios.get(route("dashboard.list"))).data;
             this.student_list = students;
         },
         async insertStudent() {
-            await axios.post(route("dashboard.store"), this.student_form);
+            await axios.post(route("dashboard.store"), this.student_form, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             this.getStudents();
             this.student_form.name = "";
             this.student_form.age = "";
@@ -263,9 +273,6 @@ export default {
             $("#studentEdit").modal("show");
         },
         async updateStudent() {
-            // console.log(this.student_update_form.id);
-            // console.log(this.student_update_form.name);
-            // console.log(this.student_update_form.age);
             await axios.post(
                 route("dashboard.update", this.student_update_form.id),
                 this.student_update_form
@@ -273,13 +280,11 @@ export default {
             this.getStudents();
             $("#studentEdit").modal("hide");
         },
+        handleFileUpload(event) {
+            this.student_form.image = event.target.files[0];
+        },
     },
 };
 </script>
 
-<style name="css" scoped>
-/* .page-title {
-    padding-top: 5vh;
-    color: green;
-} */
-</style>
+<style name="css" scoped></style>

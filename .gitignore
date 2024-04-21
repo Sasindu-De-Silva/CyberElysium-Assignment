@@ -15,6 +15,7 @@ auth.json
 npm-debug.log
 yarn-error.log
 composer.lock
+public/images
 /.fleet
 /.idea
 /.vscode
